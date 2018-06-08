@@ -95,12 +95,34 @@ if (input === 'movie-this') {
 
 // * Feel free to change the text in that document to test out the feature for other commands.
 
+if (input === 'do-what-it-says') {
+    var fs = require('fs');
 
-var fs = require('fs');
-
-fs.appendFile('random.txt', err, data)
-
-
-
-
-
+    fs.readFile('random.txt', 'utf8', function (error, data) {
+        if (error) {
+            return console.log('Error occurred: ' + error);
+        } else {
+            var splitData = data.split(','); // split random.txt into an array with 2 strings
+            var input = splitData[0];//set input to call Liri's command
+            var spotifyThis = splitData[1];//set query to song name
+            if (input === 'spotify-this-song') {
+                console.log(input);
+                console.log(spotifyThis);
+                spotify.search({
+                    type: 'track',
+                    query: spotifyThis,
+                    limit: 1
+                }, function (err, data) {
+                    if (err) {
+                        return console.log('error occurred: ' + err);
+                    } else {
+                        console.log('Album Name: ' + data.tracks.items[0].album.name);
+                        console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
+                        console.log('Song name: ' + data.tracks.items[0].name); //song
+                        console.log('Click this link to preview the track: ' + data.tracks.items[0].preview_url);
+                    };
+                });
+            }
+        };
+    });
+}
