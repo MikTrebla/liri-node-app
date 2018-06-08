@@ -5,11 +5,17 @@ var Spotify = require('node-spotify-api');
 var keys = require('./keys.js');
 var input = process.argv[2];
 
-
 //These two below will be used to GET data from api's
 var spotify = new Spotify(keys.spotify);
 var twitter = new Twitter(keys.twitter);
+var fs = require('fs');
+
 /////////////////////////////////////////////////////
+
+
+
+
+
 
 // // * `my-tweets`
 if (input === 'my-tweets') {
@@ -23,7 +29,7 @@ if (input === 'my-tweets') {
             var tweet = data[i].text;
             var created = data[i].created_at
             console.log(tweet + ' created at ' + created);
-        }
+        };
     }
 }
 
@@ -88,26 +94,18 @@ if (input === 'movie-this') {
 
 
 // * `do-what-it-says`
-
-// * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
-
-// * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
-
-// * Feel free to change the text in that document to test out the feature for other commands.
-
 if (input === 'do-what-it-says') {
-    var fs = require('fs');
 
     fs.readFile('random.txt', 'utf8', function (error, data) {
         if (error) {
             return console.log('Error occurred: ' + error);
         } else {
             var splitData = data.split(','); // split random.txt into an array with 2 strings
-            var input = splitData[0];//set input to call Liri's command
-            var spotifyThis = splitData[1];//set query to song name
+            var input = splitData[0]; //set input to call Liri's command
+            var spotifyThis = splitData[1]; //set query to song name
             if (input === 'spotify-this-song') {
-                console.log(input);
-                console.log(spotifyThis);
+                // console.log(input);
+                // console.log(spotifyThis);
                 spotify.search({
                     type: 'track',
                     query: spotifyThis,
@@ -122,7 +120,19 @@ if (input === 'do-what-it-says') {
                         console.log('Click this link to preview the track: ' + data.tracks.items[0].preview_url);
                     };
                 });
-            }
+            };
         };
     });
-}
+};
+
+
+//Bonus attempt
+var text = '';
+
+fs.appendFile('log.txt', text, function (error) {
+    if (error) {
+        console.log('Something went wrong: ' + error);
+    } else {
+        console.log('Yay');
+    }
+});
