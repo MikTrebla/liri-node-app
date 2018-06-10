@@ -14,15 +14,16 @@ var fs = require('fs');
 /////////////////////////////////////////////////////
 
 
+var text = '';
 
 
 
 
 // * `my-tweets`
 // if (input === 'my-tweets') {
-    var params = {
-        count: 20
-    }
+var params = {
+    count: 20
+}
 // var myTweets =
 function getTweets() {
     twitter.get('statuses/user_timeline', params, results);
@@ -32,6 +33,9 @@ function getTweets() {
             var tweet = data[i].text;
             var created = data[i].created_at
             console.log(tweet + ' created at ' + created);
+            text += tweet + ' created at ' + created + '\r\n'
+            logText();
+            text=''
         };
     }
 }
@@ -61,6 +65,11 @@ function spotifyMe() {
             console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
             console.log('Song name: ' + data.tracks.items[0].name); //song
             console.log('Click this link to preview the track: ' + data.tracks.items[0].preview_url);
+            // console.log(JSON.stringify(data.tracks.items.preview_url, null, 2))
+            console.log('Click this link to log in to Spotify and play the track: ' + data.tracks.items[0].external_urls.spotify)
+            text += 'Album Name: ' + data.tracks.items[0].album.name + '\r\n' + 'Artist: ' + data.tracks.items[0].artists[0].name + '\r\n' + 'Song name: ' + data.tracks.items[0].name + '\r\n' + 'Click this link to preview the track: ' + data.tracks.items[0].preview_url + '.\r\n'
+            logText();
+            text=''
         }
     });
 }
@@ -91,10 +100,11 @@ function searchMovie() {
         if (!error && response.statusCode === 200) {
             // console.log(JSON.parse(data));
             var info = JSON.parse(data);
-            console.log(info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '.');
-            console.log('You can read a short synopsis here: \n\r' + info.Plot);
-            console.log('Featured actors are : \n\r' + info.Actors + '.');
+            console.log(info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: \n\r' + info.Plot + '\r\n\ Featured actors are : \n\r' + info.Actors + '.');
             // console.log(data.)
+            text += info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: \n\r' + info.Plot + '\r\n\ Featured actors are : \n\r' + info.Actors + '. \r\n'
+            logText();
+            text=''
         }
     })
 }
@@ -107,52 +117,56 @@ function searchMovie() {
 // * `do-what-it-says`
 // if (input === 'do-what-it-says') {
 
-//     fs.readFile('random.txt', 'utf8', function (error, data) {
-//         if (error) {
-//             return console.log('Error occurred: ' + error);
-//         } else {
-//             var splitData = data.split(','); // split random.txt into an array with 2 strings
-//             var input = splitData[0]; //set input to call Liri's command
-//             var spotifyThis = splitData[1]; //set query to song name
-//             if (input === 'spotify-this-song') {
-//                 // console.log(input);
-//                 // console.log(spotifyThis);
-//                 spotify.search({
-//                     type: 'track',
-//                     query: spotifyThis,
-//                     limit: 1
-//                 }, function (err, data) {
-//                     if (err) {
-//                         return console.log('error occurred: ' + err);
-//                     } else {
-//                         console.log('Album Name: ' + data.tracks.items[0].album.name);
-//                         console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
-//                         console.log('Song name: ' + data.tracks.items[0].name); //song
-//                         console.log('Click this link to preview the track: ' + data.tracks.items[0].preview_url);
-//                     };
-//                 });
-//             };
-//         };
-//     });
-// };
-
+function whatever() {
+    fs.readFile('random.txt', 'utf8', function (error, data) {
+        if (error) {
+            return console.log('Error occurred: ' + error);
+        } else {
+            var splitData = data.split(','); // split random.txt into an array with 2 strings
+            var input = splitData[0]; //set input to call Liri's command
+            var spotifyThis = splitData[1]; //set query to song name
+            if (input === 'spotify-this-song') {
+                // console.log(input);
+                // console.log(spotifyThis);
+                spotify.search({
+                    type: 'track',
+                    query: spotifyThis,
+                    limit: 1
+                }, function (err, data) {
+                    if (err) {
+                        return console.log('error occurred: ' + err);
+                    } else {
+                        console.log('Album Name: ' + data.tracks.items[0].album.name);
+                        console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
+                        console.log('Song name: ' + data.tracks.items[0].name); //song
+                        console.log('Click this link to preview the track: ' + data.tracks.items[0].preview_url);
+                        text += 'Album Name: ' + data.tracks.items[0].album.name + '\r\n Artist: ' + data.tracks.items[0].artists[0].name + '\r\n Song name: ' + data.tracks.items[0].name + '\r\n Click this link to preview the track: ' + data.tracks.items[0].preview_url + '.\r\n'
+                        logText();
+                        text = ''
+                    };
+                });
+            };
+        };
+    });
+}
 
 // Bonus attempt
-// var text = '';
 
-// fs.appendFile('log.txt', text, function (error) {
-//     if (error) {
-//         console.log('Something went wrong: ' + error);
-//     } else {
-//         console.log('Yay');
-//     }
-// });
+function logText() {
+    fs.appendFile('log.txt', text, function (error) {
+        if (error) {
+            console.log('Something went wrong: ' + error);
+        } else {
+            console.log('Yay');
+        }
+    });
+}
 
 
 inquirer.prompt([{
     type: 'list',
     message: 'Choose which command to execute.',
-    choices: ['Twitter', 'Spotify', 'Movie'],
+    choices: ['Twitter', 'Spotify', 'Movie', 'Whatever'],
     name: 'list'
 }]).then(function (results) {
     if (results.list === 'Twitter') {
@@ -176,5 +190,7 @@ inquirer.prompt([{
             searchInput = movieSearch.searchMovie;
             searchMovie();
         })
+    } else {
+        whatever();
     }
 })
