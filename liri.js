@@ -2,15 +2,13 @@ require("dotenv").config();
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 var inquirer = require('inquirer');
-
+var fs = require('fs');
 var keys = require('./keys.js');
 var input = process.argv[2];
 
 //These two below will be used to GET data from api's
 var spotify = new Spotify(keys.spotify);
 var twitter = new Twitter(keys.twitter);
-var fs = require('fs');
-
 /////////////////////////////////////////////////////
 
 
@@ -53,14 +51,12 @@ var spotifyThis = '';
 // console.log(spotifyThis)
 // var spotifyMe =
 function spotifyMe() {
-    spotify.search({
-        type: 'track',
-        query: spotifyThis,
-        limit: 1
-    }, function (err, data) {
-        if (err) {
-            return console.log('error occurred: ' + err);
-        } else if (spotifyThis !== '') {
+    if (spotifyThis !== '') {
+        spotify.search({
+            type: 'track',
+            query: spotifyThis,
+            limit: 1
+        }, function (err, data) {
             console.log('Album Name: ' + data.tracks.items[0].album.name);
             console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
             console.log('Song name: ' + data.tracks.items[0].name); //song
@@ -70,23 +66,33 @@ function spotifyMe() {
             text += 'Album Name: ' + data.tracks.items[0].album.name + '\r\n' + 'Artist: ' + data.tracks.items[0].artists[0].name + '\r\n' + 'Song name: ' + data.tracks.items[0].name + '\r\n' + 'Click this link to preview the track: ' + data.tracks.items[0].preview_url + '.\r\n'
             logText();
             text = ''
-        } else if (spotifyThis === '') {
-            spotify.search({
-                type: 'The Sign',
-                query : spotifyThis,
-                artist : 'Ace of Base',
-                limit: 1
-            }, function (err, data) {
-                console.log('Album Name: ' + data.tracks.items[0].album.name + '\r\n' + 'Artist: ' + data.tracks.items[0].artists[0].name + '\r\n' + 'Song name: ' + data.tracks.items[0].name + '\r\n' + 'Click this link to preview the track: ' + data.tracks.items[0].preview_url + '.\r\n');
-                logText();
-                text =''
-            })
-        }
-    });
+        });
+    } else if (spotifyThis === '') {
+        spotify.search({
+            type: 'track',
+            query: 'The Sign',
+            limit: 10
+        }, function (error, results) {
+            // console.log(JSON.stringify(results, null, 2));
+            // console.log(results.tracks.items[7])
+            // console.log(results.tracks.items[7].album.name);
+            // console.log(results.tracks.items[7].artists[0].name)
+            // console.log(results.tracks.items[7].artists[0].name)
+            console.log('Album Name: ' + results.tracks.items[7].album.name + '\r\n' + 'Artist: ' + results.tracks.items[7].artists[0].name + '\r\n' + 'Song name: ' + results.tracks.items[7].name + '\r\n' + 'Click this link to preview the track: ' + results.tracks.items[7].preview_url + '.\r\n')
+            text += 'Album Name: ' + results.tracks.items[7].album.name + '\r\n' + 'Artist: ' + results.tracks.items[7].artists[0].name + '\r\n' + 'Song name: ' + results.tracks.items[7].name + '\r\n' + 'Click this link to preview the track: ' + results.tracks.items[0].preview_url + '.\r\n'
+            logText();
+            text = ''
+        })
+    };
+
+
 }
+
 // }
 
-
+// console.log('Album Name: ' + data.tracks.items[0].album.name + '\r\n' + 'Artist: ' + data.tracks.items[0].artists[0].name + '\r\n' + 'Song name: ' + data.tracks.items[0].name + '\r\n' + 'Click this link to preview the track: ' + data.tracks.items[0].preview_url + '.\r\n');
+// logText();
+// text = ''
 
 
 // * `movie-this`
@@ -107,10 +113,10 @@ var searchInput = '';
 
 
 function searchMovie() {
-        if (searchInput !== '') {
-            queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=' + searchInput + '&y=&plot=short';
+    if (searchInput !== '') {
+        queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=' + searchInput + '&y=&plot=short';
 
-            omdb(queryURL, function (error, response, data) {
+        omdb(queryURL, function (error, response, data) {
             // console.log(JSON.parse(data));
             var info = JSON.parse(data);
             console.log(info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: \n\r' + info.Plot + '\r\n\ Featured actors are : \n\r' + info.Actors + '.');
@@ -118,24 +124,24 @@ function searchMovie() {
             text += info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: ' + info.Plot + '\r\n\ Featured actors are : ' + info.Actors + '. \r\n'
             logText();
             text = ''
+        })
+    } else if (searchInput === '') {
+        {
+            queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=Mr.+Nobody&y=&plot=short'
+            omdb(queryURL, function (error, response, data) {
+                var info = JSON.parse(data);
+                console.log(info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '.');
+                console.log('You can read a short synopsis here: \n\r' + info.Plot);
+                console.log('Featured actors are : \n\r' + info.Actors + '.');
+                text += info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: ' + info.Plot + '\r\n\ Featured actors are : ' + info.Actors + '. \r\n'
+                logText();
+                text = ''
             })
-        } else if (searchInput === '') {
-            {
-                queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=Mr.+Nobody&y=&plot=short'
-                omdb(queryURL, function (error, response, data) {
-                    var info = JSON.parse(data);
-                    console.log(info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '.');
-                    console.log('You can read a short synopsis here: \n\r' + info.Plot);
-                    console.log('Featured actors are : \n\r' + info.Actors + '.');
-                    text += info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: ' + info.Plot + '\r\n\ Featured actors are : ' + info.Actors + '. \r\n'
-                    logText();
-                    text = ''
-                })
-
-            }
-
 
         }
+
+
+    }
 }
 
 // }
@@ -186,7 +192,7 @@ function logText() {
         if (error) {
             console.log('Something went wrong: ' + error);
         } else {
-            console.log('Yay');
+            // console.log('Yay');
         }
     });
 }
