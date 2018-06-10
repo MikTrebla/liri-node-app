@@ -35,7 +35,7 @@ function getTweets() {
             console.log(tweet + ' created at ' + created);
             text += tweet + ' created at ' + created + '\r\n'
             logText();
-            text=''
+            text = ''
         };
     }
 }
@@ -47,9 +47,9 @@ function getTweets() {
 // * `spotify-this-song`
 // if (input === 'spotify-this-song') {
 var spotifyThis = '';
-for (var i = 3; i < process.argv.length; i++) {
-    spotifyThis = spotifyThis + process.argv[i] + ' ';
-}
+// for (var i = 3; i < process.argv.length; i++) {
+//     spotifyThis = spotifyThis + process.argv[i] + ' ';
+// }
 // console.log(spotifyThis)
 // var spotifyMe =
 function spotifyMe() {
@@ -60,7 +60,7 @@ function spotifyMe() {
     }, function (err, data) {
         if (err) {
             return console.log('error occurred: ' + err);
-        } else {
+        } else if (spotifyThis !== '') {
             console.log('Album Name: ' + data.tracks.items[0].album.name);
             console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
             console.log('Song name: ' + data.tracks.items[0].name); //song
@@ -69,7 +69,18 @@ function spotifyMe() {
             console.log('Click this link to log in to Spotify and play the track: ' + data.tracks.items[0].external_urls.spotify)
             text += 'Album Name: ' + data.tracks.items[0].album.name + '\r\n' + 'Artist: ' + data.tracks.items[0].artists[0].name + '\r\n' + 'Song name: ' + data.tracks.items[0].name + '\r\n' + 'Click this link to preview the track: ' + data.tracks.items[0].preview_url + '.\r\n'
             logText();
-            text=''
+            text = ''
+        } else if (spotifyThis === '') {
+            spotify.search({
+                type: 'The Sign',
+                query : spotifyThis,
+                artist : 'Ace of Base',
+                limit: 1
+            }, function (err, data) {
+                console.log('Album Name: ' + data.tracks.items[0].album.name + '\r\n' + 'Artist: ' + data.tracks.items[0].artists[0].name + '\r\n' + 'Song name: ' + data.tracks.items[0].name + '\r\n' + 'Click this link to preview the track: ' + data.tracks.items[0].preview_url + '.\r\n');
+                logText();
+                text =''
+            })
         }
     });
 }
@@ -92,21 +103,39 @@ var searchInput = '';
 // }
 // searchInput.slice(0, -1);
 // console.log(searchInput);
-var queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=' + searchInput + '&y=&plot=short';
+
 
 
 function searchMovie() {
-    omdb(queryURL, function (error, response, data) {
-        if (!error && response.statusCode === 200) {
+        if (searchInput !== '') {
+            queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=' + searchInput + '&y=&plot=short';
+
+            omdb(queryURL, function (error, response, data) {
             // console.log(JSON.parse(data));
             var info = JSON.parse(data);
             console.log(info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: \n\r' + info.Plot + '\r\n\ Featured actors are : \n\r' + info.Actors + '.');
             // console.log(data.)
-            text += info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: \n\r' + info.Plot + '\r\n\ Featured actors are : \n\r' + info.Actors + '. \r\n'
+            text += info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: ' + info.Plot + '\r\n\ Featured actors are : ' + info.Actors + '. \r\n'
             logText();
-            text=''
+            text = ''
+            })
+        } else if (searchInput === '') {
+            {
+                queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=Mr.+Nobody&y=&plot=short'
+                omdb(queryURL, function (error, response, data) {
+                    var info = JSON.parse(data);
+                    console.log(info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '.');
+                    console.log('You can read a short synopsis here: \n\r' + info.Plot);
+                    console.log('Featured actors are : \n\r' + info.Actors + '.');
+                    text += info.Title + ' was released on ' + info.Released + '. IMDB rated it a ' + info.Ratings[0].Value + ', but Rotten Tomatoes rated it a ' + info.Ratings[1].Value + '. The movie was produced in the ' + info.Country + '. The movie can be watched in the following languages: ' + info.Language + '. \r\n You can read a short synopsis here: ' + info.Plot + '\r\n\ Featured actors are : ' + info.Actors + '. \r\n'
+                    logText();
+                    text = ''
+                })
+
+            }
+
+
         }
-    })
 }
 
 // }
@@ -185,9 +214,10 @@ inquirer.prompt([{
         inquirer.prompt([{
             type: 'input',
             message: 'What movie do you want to look for?',
-            name: 'searchMovie'
+            name: 'movieInput'
         }]).then(function (movieSearch) {
-            searchInput = movieSearch.searchMovie;
+
+            searchInput = movieSearch.movieInput;
             searchMovie();
         })
     } else {
