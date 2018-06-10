@@ -1,6 +1,7 @@
 require("dotenv").config();
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
+var inquirer = require('inquirer');
 
 var keys = require('./keys.js');
 var input = process.argv[2];
@@ -17,12 +18,14 @@ var fs = require('fs');
 
 
 
-// // * `my-tweets`
-if (input === 'my-tweets') {
+// * `my-tweets`
+// if (input === 'my-tweets') {
     var params = {
         count: 20
     }
-    var myTweets = twitter.get('statuses/user_timeline', params, results);
+// var myTweets =
+function getTweets() {
+    twitter.get('statuses/user_timeline', params, results);
 
     function results(err, data, response) {
         for (var i = 0; i < params.count; i++) {
@@ -32,18 +35,21 @@ if (input === 'my-tweets') {
         };
     }
 }
+// }
 
-// //on node command, run function myTweets  to create last 20 tweets
+//on node command, run function myTweets  to create last 20 tweets
 
 
 // * `spotify-this-song`
-if (input === 'spotify-this-song') {
-    var spotifyThis = '';
-    for (var i = 3; i < process.argv.length; i++) {
-        spotifyThis = spotifyThis + process.argv[i] + ' ';
-    }
-    // console.log(spotifyThis)
-    var spotifyMe = spotify.search({
+// if (input === 'spotify-this-song') {
+var spotifyThis = '';
+for (var i = 3; i < process.argv.length; i++) {
+    spotifyThis = spotifyThis + process.argv[i] + ' ';
+}
+// console.log(spotifyThis)
+// var spotifyMe =
+function spotifyMe() {
+    spotify.search({
         type: 'track',
         query: spotifyThis,
         limit: 1
@@ -58,26 +64,29 @@ if (input === 'spotify-this-song') {
         }
     });
 }
+// }
 
 
 
 
 // * `movie-this`
 
-if (input === 'movie-this') {
-    var omdb = require('request');
-    var searchInput = '';
-    for (var i = 3; i < process.argv.length; i++) {
-        if (i > 3 && i < process.argv.length) {
-            searchInput = searchInput + '+' + process.argv[i];
-        } else {
-            searchInput += process.argv[i];
-        }
-    }
-    searchInput.slice(0, -1);
-    // console.log(searchInput);
-    var queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=' + searchInput + '&y=&plot=short';
+// if (input === 'movie-this') {
+var omdb = require('request');
+var searchInput = '';
+// for (var i = 3; i < process.argv.length; i++) {
+//     if (i > 3 && i < process.argv.length) {
+//         searchInput = searchInput + '+' + process.argv[i];
+//     } else {
+//         searchInput += process.argv[i];
+//     }
+// }
+// searchInput.slice(0, -1);
+// console.log(searchInput);
+var queryURL = 'http://www.omdbapi.com/?apikey=trilogy&t=' + searchInput + '&y=&plot=short';
 
+
+function searchMovie() {
     omdb(queryURL, function (error, response, data) {
         if (!error && response.statusCode === 200) {
             // console.log(JSON.parse(data));
@@ -90,49 +99,82 @@ if (input === 'movie-this') {
     })
 }
 
+// }
+
 
 
 
 // * `do-what-it-says`
-if (input === 'do-what-it-says') {
+// if (input === 'do-what-it-says') {
 
-    fs.readFile('random.txt', 'utf8', function (error, data) {
-        if (error) {
-            return console.log('Error occurred: ' + error);
-        } else {
-            var splitData = data.split(','); // split random.txt into an array with 2 strings
-            var input = splitData[0]; //set input to call Liri's command
-            var spotifyThis = splitData[1]; //set query to song name
-            if (input === 'spotify-this-song') {
-                // console.log(input);
-                // console.log(spotifyThis);
-                spotify.search({
-                    type: 'track',
-                    query: spotifyThis,
-                    limit: 1
-                }, function (err, data) {
-                    if (err) {
-                        return console.log('error occurred: ' + err);
-                    } else {
-                        console.log('Album Name: ' + data.tracks.items[0].album.name);
-                        console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
-                        console.log('Song name: ' + data.tracks.items[0].name); //song
-                        console.log('Click this link to preview the track: ' + data.tracks.items[0].preview_url);
-                    };
-                });
-            };
-        };
-    });
-};
+//     fs.readFile('random.txt', 'utf8', function (error, data) {
+//         if (error) {
+//             return console.log('Error occurred: ' + error);
+//         } else {
+//             var splitData = data.split(','); // split random.txt into an array with 2 strings
+//             var input = splitData[0]; //set input to call Liri's command
+//             var spotifyThis = splitData[1]; //set query to song name
+//             if (input === 'spotify-this-song') {
+//                 // console.log(input);
+//                 // console.log(spotifyThis);
+//                 spotify.search({
+//                     type: 'track',
+//                     query: spotifyThis,
+//                     limit: 1
+//                 }, function (err, data) {
+//                     if (err) {
+//                         return console.log('error occurred: ' + err);
+//                     } else {
+//                         console.log('Album Name: ' + data.tracks.items[0].album.name);
+//                         console.log('Artist: ' + data.tracks.items[0].artists[0].name); //name
+//                         console.log('Song name: ' + data.tracks.items[0].name); //song
+//                         console.log('Click this link to preview the track: ' + data.tracks.items[0].preview_url);
+//                     };
+//                 });
+//             };
+//         };
+//     });
+// };
 
 
-//Bonus attempt
-var text = '';
+// Bonus attempt
+// var text = '';
 
-fs.appendFile('log.txt', text, function (error) {
-    if (error) {
-        console.log('Something went wrong: ' + error);
-    } else {
-        console.log('Yay');
+// fs.appendFile('log.txt', text, function (error) {
+//     if (error) {
+//         console.log('Something went wrong: ' + error);
+//     } else {
+//         console.log('Yay');
+//     }
+// });
+
+
+inquirer.prompt([{
+    type: 'list',
+    message: 'Choose which command to execute.',
+    choices: ['Twitter', 'Spotify', 'Movie'],
+    name: 'list'
+}]).then(function (results) {
+    if (results.list === 'Twitter') {
+        getTweets();
+    } else if (results.list === 'Spotify') {
+        inquirer.prompt([{
+            type: 'input',
+            message: 'What song do you want to look for?',
+            name: 'searchSong'
+        }]).then(function (spotifySearch) {
+            spotifyThis = spotifySearch.searchSong;
+            spotifyMe();
+        })
+
+    } else if (results.list === 'Movie') {
+        inquirer.prompt([{
+            type: 'input',
+            message: 'What movie do you want to look for?',
+            name: 'searchMovie'
+        }]).then(function (movieSearch) {
+            searchInput = movieSearch.searchMovie;
+            searchMovie();
+        })
     }
-});
+})
