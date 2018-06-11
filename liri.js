@@ -198,35 +198,73 @@ function logText() {
 }
 
 
+// inquirer.prompt([{
+//     type: 'list',
+//     message: 'Choose which command to execute.',
+//     choices: ['Twitter', 'Spotify', 'Movie', 'Whatever'],
+//     name: 'list'
+// }]).then(function (results) {
+//     if (results.list === 'Twitter') {
+//         getTweets();
+//     } else if (results.list === 'Spotify') {
+//         inquirer.prompt([{
+//             type: 'input',
+//             message: 'What song do you want to look for?',
+//             name: 'searchSong'
+//         }]).then(function (spotifySearch) {
+//             spotifyThis = spotifySearch.searchSong;
+//             spotifyMe();
+//         })
+
+//     } else if (results.list === 'Movie') {
+//         inquirer.prompt([{
+//             type: 'input',
+//             message: 'What movie do you want to look for?',
+//             name: 'movieInput'
+//         }]).then(function (movieSearch) {
+
+//             searchInput = movieSearch.movieInput;
+//             searchMovie();
+//         })
+//     } else {
+//         whatever();
+//     }
+// })
+
+
 inquirer.prompt([{
     type: 'list',
     message: 'Choose which command to execute.',
     choices: ['Twitter', 'Spotify', 'Movie', 'Whatever'],
     name: 'list'
 }]).then(function (results) {
-    if (results.list === 'Twitter') {
-        getTweets();
-    } else if (results.list === 'Spotify') {
-        inquirer.prompt([{
-            type: 'input',
-            message: 'What song do you want to look for?',
-            name: 'searchSong'
-        }]).then(function (spotifySearch) {
-            spotifyThis = spotifySearch.searchSong;
-            spotifyMe();
-        })
+    switch (results.list) {
+        case 'Twitter':
+            getTweets();
+            break;
+        case 'Spotify':
+            inquirer.prompt([{
+                type: 'input',
+                message: 'What song do you want to look for?',
+                name: 'searchSong'
+            }]).then(function (spotifySearch) {
+                spotifyThis = spotifySearch.searchSong;
+                spotifyMe();
+            });
+            break;
+        case 'Movie':
+            inquirer.prompt([{
+                type: 'input',
+                message: 'What movie do you want to look for?',
+                name: 'movieInput'
+            }]).then(function (movieSearch) {
 
-    } else if (results.list === 'Movie') {
-        inquirer.prompt([{
-            type: 'input',
-            message: 'What movie do you want to look for?',
-            name: 'movieInput'
-        }]).then(function (movieSearch) {
-
-            searchInput = movieSearch.movieInput;
-            searchMovie();
-        })
-    } else {
-        whatever();
+                searchInput = movieSearch.movieInput;
+                searchMovie();
+            });
+            break;
+        case 'Whatever':
+            whatever();
+            break;
     }
-})
+});
